@@ -40,6 +40,17 @@
             Page.displayDefault();
         });
 
+        $("#studentDetailsCancelButton").on("click", function (event) {
+            console.log("[#courseDetailsCancelButton.click]: Course details canceled.");
+
+            // De-scelect the top menu button.
+           
+            Page.deselectMenu();
+
+            Page.displayDefault();
+
+        });
+
         // Save the course details.
         $("#courseDetailsForm").submit(function (event) {
             event.preventDefault();
@@ -70,7 +81,7 @@
             var id = $(item).data("id");
             var firstName = $(item).data("firstName");
             var lastName = $(item).data("lastName");
-            var SSN = $(item).data("studentPersNummer");
+            var studentPersNummer = $(item).data("studentPersNummer");
             var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer }
             Page.appendStudentSelectOption(student);
 
@@ -85,7 +96,7 @@
            
         });
 
-        $('.nav li, a').click(function (e) {
+        $('.nav li ,a').click(function (e) {
             $('.nav li.active').removeClass('active');
             var $this = $(this);
             if (!$this.hasClass('active')) {
@@ -115,11 +126,41 @@
             Page.saveCourseDetails(course);
         });
 
+        $("#saveStudentButton").submit(function (event) {
+            event.preventDefault();
+            console.log("[courseListAddCourseForm.submit]: Submitted the new course form.");
+
+            var student = Utilities.formToJson(this);
+            //course.students = [];
+            //$(this)[0].reset();
+
+            Page.saveStudentDetails(student);
+        });
+
+
         $(document).on("courseSavedCustomEvent", function (event) {
             console.log("[courseSavedCustomEvent]: " + event.message.description);
             console.log("[courseSavedCustomEvent]: " + event.message.data);
 
             Page.displayCourseList();
+
+        });
+
+        $(document).on("studentSavedCustomEvent", function (event) {
+            console.log("[studentSavedCustomEvent]: " + event.message.description);
+            console.log("[studentSavedCustomEvent]: " + event.message.data);
+
+            Page.displayStudentList();
+
+        });
+        $("#studentListUp").click(function(){
+            $("#studentListTable").slideUp();
+        
+        });
+
+
+        $("#studentListDown").click(function () {
+            $("#studentListTable").slideDown();
 
         });
 

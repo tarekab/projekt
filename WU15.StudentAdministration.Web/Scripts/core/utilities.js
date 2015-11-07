@@ -1,4 +1,5 @@
 ﻿
+
 //Disable submit button when there is no data to save
 //$(document).ready(function () {
 //    $('button[type="submit"]').prop('disabled', true);
@@ -9,6 +10,8 @@
 //    });
 //});
 /////////////////////
+
+
     var Utilities = new function Utilities() {
 
         Utilities.formToJson = function (form) {
@@ -39,6 +42,8 @@ var Page = new function Page() {
     Page.init = function () {
         Page.navigate("start");
     }
+
+   
 
     // Fetch and display all courses.
     Page.displayDefault = function () {
@@ -122,13 +127,28 @@ var Page = new function Page() {
                     + courses[courseIndex].id + "'>"
                     + "<span class='list-group-addon glyphicon glyphicon-edit'></span>&nbsp;" // The edit icon.
                     + courses[courseIndex].name
+             
+                      
+
                     + "</a>";
-                item += "<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + "</p>";
+                item += "<b>" +"<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + "</p>" + "</b>";
 
                 // Students
                 if (courses[courseIndex].students.length > 0) {
                     for (var subIndex = 0; subIndex < courses[courseIndex].students.length; subIndex++) {
-                        item += "<a href='#' class='list-group-item'>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + "</a>";
+                        item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon glyphicon-user'> </span> "+ courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + "</a>";
+                       
+                        $(function () {
+
+                            var $list = $(".list-group-item");
+
+                            $list.children().detach().sort(function (a, b) {
+                                return $(a).text().localeCompare($(b).text());
+                            }).appendTo($list);
+
+                        });
+
+
                     }
                 } else {
                     item += "<span class='list-group-item'><b>Kursen har inga studenter registrerade.</b></span>";
@@ -146,7 +166,10 @@ var Page = new function Page() {
         configuration.defaultPlaceholder.append(view);
 
         // Display the content.
-        configuration.defaultPlaceholder.fadeIn(1000);
+   
+       
+
+        configuration.defaultPlaceholder.fadeIn(500);
     }
 
     Page.renderCourseList = function (courses) {
@@ -163,7 +186,18 @@ var Page = new function Page() {
         }
         tbody.append(html);
 
-        configuration.courseListPlaceholder.fadeIn(500);
+        
+        $(function () {
+
+            var $list = $("#courseListTable tbody");
+
+            $list.children().detach().sort(function (a, b) {
+                return $(a).text().localeCompare($(b).text());
+            }).appendTo($list);
+
+        });
+            configuration.courseListPlaceholder.fadeIn(500);
+
     }
 
     Page.renderStudentList = function (student) {
@@ -186,7 +220,15 @@ var Page = new function Page() {
         //configuration.courseListPlaceholder.fadeIn(1000);
        // var view = "Student list...";
        // configuration.studentListPlaceholder.append(html);
+         $(function () {
 
+             var $list = $("#studentListTable tbody");
+
+             $list.children().detach().sort(function (a, b) {
+                 return $(a).text().localeCompare($(b).text());
+             }).appendTo($list);
+
+         });
         configuration.studentListPlaceholder.fadeIn(500);
     }
 
@@ -212,9 +254,6 @@ var Page = new function Page() {
         // Hide the default view.
         configuration.defaultPlaceholder.hide();
         //configuration.studentListPlaceholder.hide();
-
-        //Disable submit button when course name is empty
-       
         // Map all form values from the course object to the form.
         var form = configuration.courseDetailsPlaceholder.find("form")[0];
         $(form["id"]).val(course.id);
@@ -236,6 +275,18 @@ var Page = new function Page() {
         configuration.courseDetailsPlaceholder.fadeIn(500);
     }
 
+   
+
+
+
+    Page.renderStudentDetails = function (student) {
+        // Hide the default view.
+        configuration.defaultPlaceholder.hide();
+        
+
+        // Display the details panel.
+        configuration.studentDetailsPlaceholder.fadeIn(500);
+    }
     Page.renderCourseDetailsStudentList = function (course) {
         configuration.courseDetailsStudentListPlaceholder.empty();
         if (course.students.length) {
@@ -320,7 +371,27 @@ var Page = new function Page() {
         });
 
     }
+    Page.saveStudentAndDisplayDefault = function (student) {
 
+        $.ajax({
+            url: configuration.studentsUrl,
+            type: "POST",
+            data: JSON.stringify(student),
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                console.log("[Page.saveCourseAndDisplayDefault.success]: Results: " + data);
+
+                // De-scelect the top menu button.
+               Page.deselectMenu();
+
+                // Display the default contents.
+                Page.displayStudentList();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
     // Saves a course and does'nt do a view update.
     Page.saveCourseDetails = function (course) {
 
@@ -336,6 +407,29 @@ var Page = new function Page() {
                 $.event.trigger({
                     type: "courseSavedCustomEvent",
                     message: { description: "Saved a course.", data: course },
+                    time: new Date()
+                });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
+
+    Page.saveStudentDetails = function (student) {
+
+        $.ajax({
+            url: configuration.studentsUrl,
+            type: "POST",
+            data: JSON.stringify(student),
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                console.log("[Page.saveStudentDetails.success]: Results: " + data);
+
+                // Brodcast course added event.
+                $.event.trigger({
+                    type: "studentSavedCustomEvent",
+                    message: { description: "Saved a student.", data: student },
                     time: new Date()
                 });
             },
@@ -384,6 +478,7 @@ var Page = new function Page() {
             id: 0,
             firstName: "",
             lastName: "",
+            studentPersNummer:"",
             schoolNo: configuration.organizationId,
             //students: []
         }
@@ -462,9 +557,11 @@ var Page = new function Page() {
                 configuration.courseListPlaceholder.hide();
                 configuration.studentListPlaceholder.hide();
                 configuration.studentDetailsPlaceholder.hide();
-                //var student= Page.getStudentTemplate
-                //Page.renderStudentDetails(student);
-                Page.displayStudentList();
+                var student = Page.getStudentTemplate();
+                Page.renderStudentDetails(student);
+                
+                
+
                 break;
 
             default:
