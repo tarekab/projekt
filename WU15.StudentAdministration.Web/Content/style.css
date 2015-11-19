@@ -92,3 +92,21 @@
         }
 
 
+        .glyphicon-pencil{
+            width:40px;
+            height:20px;
+            cursor:pointer;
+
+        }
+        #studentcheck{
+        height:20px;
+        width:20px;
+    
+
+}
+
+        .glyphicon-user{
+
+        color:#47a447;
+        
+        }

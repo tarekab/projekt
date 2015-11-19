@@ -37,15 +37,12 @@ namespace WU15.StudentAdministration.Web
             var json = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
             json.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            //GlobalConfiguration.Configuration.Formatters.Insert(0, new JsonpMediaTypeFormatter()); 
             GlobalConfiguration.Configuration.MessageHandlers.Add(new XHttpMethodOverrideDelegatingHandler());
 
             Courses = new List<Course>();
             Students = new List<Student>();
             LoadStudents();
             LoadCourses();
-
-            KeepAliveThread.Start();
         }
 
         private static void LoadCourses()
@@ -54,47 +51,44 @@ namespace WU15.StudentAdministration.Web
             {
                 Id = 1,
                 Students = Students,
-                SchoolNo = "c08bdab7-ed3d-4048-8338-d4f14f2770a8",
                 Credits = "15",
                 Name = "Pedagogik 1",
                 Term = "VT",
-                Year = "2015"
+                Year = "2015",
+                Aktiv = true
             };
             Courses.Add(course);
 
             course = new Course()
             {
                 Id = 2,
-                //Students = Students,
-                SchoolNo = "c08bdab7-ed3d-4048-8338-d4f14f2770a8",
                 Credits = "10",
                 Name = "Pedagogik 2",
                 Term = "VT",
-                Year = "2015"
+                Year = "2015",
+                Aktiv = true
             };
             Courses.Add(course);
 
             course = new Course()
             {
                 Id = 3,
-                //Students = Students,
-                SchoolNo = "c08bdab7-ed3d-4048-8338-d4f14f2770a8",
                 Credits = "5",
                 Name = "Datalogi 1",
                 Term = "VT",
-                Year = "2015"
+                Year = "2015",
+                Aktiv = true
             };
             Courses.Add(course);
 
             course = new Course()
             {
                 Id = 4,
-                //Students = Students,
-                SchoolNo = "c08bdab7-ed3d-4048-8338-d4f14f2770a8",
                 Credits = "7,5",
                 Name = "Filosofi 1",
                 Term = "VT",
-                Year = "2015"
+                Year = "2015",
+                Aktiv = true
             };
             Courses.Add(course);
         }
@@ -122,7 +116,8 @@ namespace WU15.StudentAdministration.Web
                 Id = 1,
                 FirstName = "Kallee",
                 LastName = "Bengtsson",
-                StudentPersNummer= "19801212-0000"
+                StudentPersNummer= "19801212-0000",
+                Aktiv = true
             };
             Students.Add(student);
 
@@ -131,7 +126,8 @@ namespace WU15.StudentAdministration.Web
                 Id = 2,
                 FirstName = "Eva",
                 LastName = "Andersson",
-                StudentPersNummer = "19801212-0000"
+                StudentPersNummer = "19801212-0000",
+                Aktiv = true
             };
             Students.Add(student);
 
@@ -140,7 +136,8 @@ namespace WU15.StudentAdministration.Web
                 Id = 3,
                 FirstName = "olva",
                 LastName = "Nordsson",
-                StudentPersNummer = "19801212-0000"
+                StudentPersNummer = "19801212-0000",
+                Aktiv = true
             };
             Students.Add(student);
 
@@ -149,7 +146,8 @@ namespace WU15.StudentAdministration.Web
                 Id = 4,
                 FirstName = "Evy",
                 LastName = "Carlsson",
-                StudentPersNummer = "19801212-0000"
+                StudentPersNummer = "19801212-0000",
+                Aktiv = true
             };
             Students.Add(student);
 
@@ -158,7 +156,8 @@ namespace WU15.StudentAdministration.Web
                 Id = 5,
                 FirstName = "Lisa",
                 LastName = "Olofsson",
-                StudentPersNummer = "19801212-0000" 
+                StudentPersNummer = "19801212-0000" ,
+                Aktiv = true
             };
             Students.Add(student);
 
@@ -167,50 +166,10 @@ namespace WU15.StudentAdministration.Web
                 Id = 6,
                 FirstName = "Robert",
                 LastName = "Tovek",
-                StudentPersNummer = "19801212-0000" 
+                StudentPersNummer = "19801212-0000",
+                Aktiv = true
             };
             Students.Add(student);
         }
-
-        static readonly Thread KeepAliveThread = new Thread(KeepAlive);
-
-        protected void Application_End()
-        {
-            KeepAliveThread.Abort();
-        }
-
-        static void KeepAlive()
-        {
-            while (true)
-            {
-                WebRequest req = WebRequest.Create("http://api.wu15.se/keepalive/index");
-
-                try
-                {
-                    req.GetResponse();
-
-                    try
-                    {
-                        Thread.Sleep(30000);
-                    }
-                    catch (ThreadAbortException)
-                    {
-                        break;
-                    }
-                }
-                catch (Exception)
-                {
-                }
-
-
-
-            }
-        }
-
-        void Application_End(object sender, EventArgs e)
-        {
-        }
     }
-
-
 }

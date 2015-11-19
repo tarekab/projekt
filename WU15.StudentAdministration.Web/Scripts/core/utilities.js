@@ -12,19 +12,28 @@
 /////////////////////
 
 
-    var Utilities = new function Utilities() {
+var Utilities = new function Utilities() {
 
-        Utilities.formToJson = function (form) {
-            var jsonForm = {};
-            $("input", $(form)).each(function (index) {
-                jsonForm[$(this).attr("name")] = this.value;
-            });
+    Utilities.formToJson = function (form) {
+        var jsonForm = {};
+        $("input", $(form)).each(function (index) {
+            jsonForm[$(this).attr("name")] = this.value;
+            //jsonForm[$(this).attr("firstName")] = this.value;
+            //jsonForm[$(this).attr("lastName")] = this.value;
+            //jsonForm[$(this).attr("studentPersNummer")] = this.value;
 
-            return jsonForm;
-        }
+        });
 
-        return Utilities;
+        return jsonForm;
     }
+
+    return Utilities;
+
+}
+
+    
+       
+   
 
 var Page = new function Page() {
     var configuration = null;
@@ -51,8 +60,7 @@ var Page = new function Page() {
 
         $.ajax({
             type: "GET",
-            url: configuration.coursesUrl,
-            data: { sid: configuration.organizationId }
+            url: configuration.coursesUrl
         }).done(function (data) {
 
             // Render the courses.
@@ -69,8 +77,7 @@ var Page = new function Page() {
 
         $.ajax({
             type: "GET",
-            url: configuration.coursesUrl,
-            data: { sid: configuration.organizationId }
+            url: configuration.coursesUrl
         }).done(function (data) {
             console.log("[Page.displayCourseList]: Number of items returned: " + data.length);
 
@@ -87,15 +94,31 @@ var Page = new function Page() {
 
         $.ajax({
             type: "GET",
-            url: configuration.studentsUrl,
-            data: { sid: configuration.organizationId }
+            url: configuration.studentsUrl 
         }).done(function (data) {
             console.log("[Page.displayStudentList]: Number of students returned: " + data.length);
-
+            //console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
             // Render the courses.
 
         //var data = {}
         Page.renderStudentList(data);
+        }).error(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText || textStatus);
+        });
+    }
+
+    Page.displayStudentEdit = function (id) {
+
+        $.ajax({
+            type: "GET",
+            url: configuration.studentsUrl + id
+        }).done(function (data) {
+            console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
+            //console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
+            // Render the courses.
+
+            //var data = {}
+           Page.renderStudentEdit(data);
         }).error(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText || textStatus);
         });
@@ -128,7 +151,7 @@ var Page = new function Page() {
                     + "<span class='list-group-addon glyphicon glyphicon-edit'></span>&nbsp;" // The edit icon.
                     + courses[courseIndex].name
              
-                      
+                    
 
                     + "</a>";
                 item += "<b>" +"<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + "</p>" + "</b>";
@@ -136,17 +159,9 @@ var Page = new function Page() {
                 // Students
                 if (courses[courseIndex].students.length > 0) {
                     for (var subIndex = 0; subIndex < courses[courseIndex].students.length; subIndex++) {
-                        item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon glyphicon-user'> </span> "+ courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + "</a>";
+                        item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
                        
-                        $(function () {
-
-                            var $list = $(".list-group-item");
-
-                            $list.children().detach().sort(function (a, b) {
-                                return $(a).text().localeCompare($(b).text());
-                            }).appendTo($list);
-
-                        });
+                       
 
 
                     }
@@ -178,11 +193,15 @@ var Page = new function Page() {
 
         var html = "";
         for (var index = 0; index < courses.length; index++) {
+           
             html += "<tr>";
             html += "<td>" + courses[index].name + "</td>";
             html += "<td>" + courses[index].credits + "</td>";
             html += "<td>" + courses[index].students.length + "</td>";
+            html += "<td>" + "<input id='studentcheck' type='checkbox' checked />" + "</td>";
             html += "</tr>";
+            
+
         }
         tbody.append(html);
 
@@ -208,18 +227,26 @@ var Page = new function Page() {
 
       var html = "";
       for (var index = 0; index < student.length; index++) {
+           
           html += "<tr>";
           html += "<td>" + student[index].firstName + "</td>";
           html += "<td>" + student[index].lastName + "</td>";
           html += "<td>" + student[index].id + "</td>";
           html += "<td>" + student[index].studentPersNummer + "</td>";
+          html += "<td>" + "<input id='studentstatus' type='checkbox' checked />"+ "</td>";
+          html += "<td>" + "<span data-editstudent=" + student[index].id + " class='glyphicon glyphicon-pencil'></span>" + "</td>";
          
+          
+       
           html += "</tr>";
+          
       }
          tbody.append(html);
         //configuration.courseListPlaceholder.fadeIn(1000);
        // var view = "Student list...";
        // configuration.studentListPlaceholder.append(html);
+
+        //Sorter Student by Name
          $(function () {
 
              var $list = $("#studentListTable tbody");
@@ -249,6 +276,22 @@ var Page = new function Page() {
         });
     }
 
+   
+   
+    Page.renderStudentEdit = function (student) {
+        // Hide the default view.
+        configuration.defaultPlaceholder.hide();
+        //configuration.studentListPlaceholder.hide();
+        // Map all form values from the course object to the form.
+        var form = configuration.studentListPlaceholder.find("form")[0];
+        $(form["id"]).val(student.id);
+        $(form["firstName"]).val(student.firstName);
+        $(form["lastName"]).val(student.lastName);
+        $(form["studentPersNummer"]).val(student.studentPersNummer);
+        
+    }
+
+
 
     Page.renderCourseDetails = function (course) {
         // Hide the default view.
@@ -275,8 +318,8 @@ var Page = new function Page() {
         configuration.courseDetailsPlaceholder.fadeIn(500);
     }
 
-   
 
+  
 
 
     Page.renderStudentDetails = function (student) {
@@ -323,8 +366,7 @@ var Page = new function Page() {
 
         $.ajax({
             type: "GET",
-            url: configuration.studentsUrl,
-            data: { sid: configuration.organizationId }
+            url: configuration.studentsUrl
         }).done(function (data) {
 
             configuration.courseDetailsStudentSelectList.empty();
@@ -339,13 +381,15 @@ var Page = new function Page() {
     }
 
     Page.appendStudentSelectOption = function (student) {
-        var name = student.firstName + " " + student.lastName;
+        var name = student.firstName + " " + student.lastName +" "+ student.studentPersNummer;
         configuration.courseDetailsStudentSelectList.append(
             $("<option />")
             .text(name)
             .attr("data-id", student.id)
             .attr("data-first-name", student.firstName)
-            .attr("data-last-name", student.lastName));
+            .attr("data-last-name", student.lastName)
+            .attr("data-student-persnummer", student.studentPersNummer));
+        
           
     }
 
@@ -371,21 +415,19 @@ var Page = new function Page() {
         });
 
     }
+
+
     Page.saveStudentAndDisplayDefault = function (student) {
 
-        $.ajax({
+      $.ajax({
             url: configuration.studentsUrl,
             type: "POST",
             data: JSON.stringify(student),
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
-                console.log("[Page.saveCourseAndDisplayDefault.success]: Results: " + data);
-
-                // De-scelect the top menu button.
-               Page.deselectMenu();
-
-                // Display the default contents.
-                Page.displayStudentList();
+                console.log(data);
+                
+              
             },
             error: function (jqXHR, textStatus, errorThrown) {
             }
@@ -394,6 +436,9 @@ var Page = new function Page() {
     }
     // Saves a course and does'nt do a view update.
     Page.saveCourseDetails = function (course) {
+
+       
+
 
         $.ajax({
             url: configuration.coursesUrl,
@@ -423,13 +468,13 @@ var Page = new function Page() {
             type: "POST",
             data: JSON.stringify(student),
             contentType: "application/json",
-            success: function (data, textStatus, jqXHR) {
+            success: function (data,textStatus, jqXHR) {
                 console.log("[Page.saveStudentDetails.success]: Results: " + data);
 
                 // Brodcast course added event.
                 $.event.trigger({
                     type: "studentSavedCustomEvent",
-                    message: { description: "Saved a student.", data: student },
+                    message: { description: "Save a student.", data: student },
                     time: new Date()
                 });
             },
@@ -439,6 +484,13 @@ var Page = new function Page() {
 
     }
 
+    
+
+
+
+
+    
+
     Page.appendStudentToList = function (student) {
         configuration.courseDetailsStudentListPlaceholder.append(
                     "<div class='list-group-item registered-student' data-id='"
@@ -447,11 +499,18 @@ var Page = new function Page() {
                     + student.firstName
                     + "' data-last-name='"
                     + student.lastName
+                    + "' data-student-persnummer='"
+                    + student.studentPersNummer
                     + "'>"
                     + student.firstName
                     + " "
                     + student.lastName
+                    + " "
+                    + student.studentPersNummer
+                    //+ "  "
 
+                    
+                    
                     
 
 
@@ -466,7 +525,6 @@ var Page = new function Page() {
             id: 0,
             name: "",
             credits: 0,
-            schoolNo: configuration.organizationId,
             students: []
         }
 
@@ -478,9 +536,7 @@ var Page = new function Page() {
             id: 0,
             firstName: "",
             lastName: "",
-            studentPersNummer:"",
-            schoolNo: configuration.organizationId,
-            //students: []
+            studentPersNummer: ""
         }
 
         return student;
@@ -495,8 +551,8 @@ var Page = new function Page() {
         var id = selectedStudentOption.data("id");
         var firstName = selectedStudentOption.data("firstName");
         var lastName = selectedStudentOption.data("lastName");
-        
-        var student = { id: id, firstName: firstName, lastName: lastName}
+        var studentPersNummer = selectedStudentOption.data("studentPersNummer");
+        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer }
         selectedStudentOption.remove();
 
         // Remove the empty list default text.
@@ -506,6 +562,7 @@ var Page = new function Page() {
                 .length;
         if (numberOfRegisteredStudents === 0) {
             configuration.courseDetailsStudentListPlaceholder.empty();
+           // $("#registerSelectedStudentButton").prop('disabled', true);
         }
 
         Page.appendStudentToList(student);
@@ -521,6 +578,7 @@ var Page = new function Page() {
                 configuration.courseListPlaceholder.hide();
                 configuration.studentListPlaceholder.hide();
                 configuration.studentDetailsPlaceholder.hide();
+                
                 Page.displayDefault();
 
                 break;
@@ -577,6 +635,7 @@ var Page = new function Page() {
     }
 
     return Page;
+    
 }
 
 

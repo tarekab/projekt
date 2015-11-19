@@ -147,7 +147,7 @@
 
                                 <div class="form-group">
                                     <label>Personnummer</label>
-                                    <input type="text" class="form-control" name="studentpersNummer" placeholder="yyyymmdd-xxxx">
+                                    <input type="text" class="form-control" name="studentPersNummer" placeholder="yyyymmdd-xxxx">
                                 </div>
 
                                 
@@ -215,18 +215,28 @@
                     </form>
                 </div>
 
-                <table id="courseListTable" class=" table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Namn</th>
-                            <th>Poäng</th>
-                            <th>Antal studenter</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Content rows -->
-                    </tbody>
-                </table>
+                
+                    <table id="courseListTable" class=" table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th>Poäng</th>
+                                <th>Antal studenter</th>
+                                <th>Aktiv</th>
+                               
+                                
+                            </tr>
+                       
+                             
+                            </thead>
+                       
+                            <tbody>
+                                
+                                <!-- Content rows -->
+
+                            </tbody>
+                       
+                    </table>
                 
             </div>
 
@@ -236,7 +246,15 @@
             <div class="panel panel-default">
                 <div class="panel-heading" style="overflow: auto">
                     <div style="float: left; overflow: auto"><b>Student</b></div>
-                    <div style="float: right; overflow: auto">+</div>
+                    <div style="float: right; overflow: auto"><a href="#" class="btn btn-info btn-lg">
+                   <span id="studentListUp" class="glyphicon glyphicon-circle-arrow-up"></span>
+                                </a>
+                        <a href="#" class="btn btn-info btn-lg">
+                            <span id="studentListDown" class="glyphicon glyphicon-circle-arrow-down"></span>
+                        </a>
+
+                    
+                    </div>
                 </div>
 
                 <div class="panel-body">
@@ -267,7 +285,7 @@
                         <div class="form-group form-input-container" style="float: left;">
                             <label>&nbsp;</label>
                             <br />
-                            <button type="submit" class="btn btn-success">Ändra</button>
+                            <button id="editStudentButton" type="submit" class="btn btn-success">Spara ändringar</button>
                         </div>
                     </form>
                 </div>
@@ -279,6 +297,8 @@
                             <th>Efternamn</th>
                             <th>Student ID</th>
                             <th>Personnummer</th>
+                            <th>Aktiv</th>
+                            <th>Ändra</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -302,6 +322,6 @@
             <p>&copy; <b>SKOLK</b>onsulten 2015</p>
         </footer>
 
-    </div>
+           
 </body>
 </html>
