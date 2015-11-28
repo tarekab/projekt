@@ -70,8 +70,8 @@ $(document).ready(function () {
                 id: $(this).data("id"),
                 firstName: $(this).data("firstName"),
                 lastName: $(this).data("lastName"),
-                studentPersNummer: $(this).data("studentPersNummer"),
-
+                studentPersNummer: $(this).data("student-persnummer"),
+                aktiv: $(this).data("student-status")
             }
             course.students.push(student);
         });
@@ -87,9 +87,11 @@ $(document).ready(function () {
         var id = $(item).data("id");
         var firstName = $(item).data("firstName");
         var lastName = $(item).data("lastName");
-        var studentPersNummer = $(item).data("studentPersNummer");
+        var studentPersNummer = $(item).data("student-persnummer");
+        var aktiv = $(item).data("student-status");
+       
 
-        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer }
+        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer,aktiv: aktiv }
         Page.appendStudentSelectOption(student);
 
         // Remove from the registered list.
@@ -134,18 +136,25 @@ $(document).ready(function () {
     });
 
     $("#studentDetailsForm").submit(function (event) {
+
+           
+           
+
         event.preventDefault();
-        console.log("[courseListAddCourseForm.submit]: Submitted the new course form.");
+        console.log("[courseListAddCourseForm.submit]: Submitted the new student.");
 
         var student = Utilities.formToJson(this);
-        //course.students = [];
+       // course.students = [];
         $(this)[0].reset();
         //configuration.studentListPlaceholder.hide();
 
-        //Page.displayStudentList();
+       //Page.displayStudentList();
         // $("#studentListTable").hide();
 
-        Page.saveStudentDetails(student);
+            Page.saveStudentDetails(student);
+
+           
+           
 
 
     });
@@ -164,7 +173,7 @@ $(document).ready(function () {
         console.log("[studentSavedCustomEvent]: " + event.message.data);
 
         //Page.displayDefault();
-        Page.displayStudentList();
+            Page.displayStudentList();
 
     });
 
@@ -175,7 +184,7 @@ $(document).ready(function () {
         console.log("[studentSavedEditEvent]: " + event.message.data);
 
         //Page.displayDefault();
-        Page.displayStudentList();
+        Page.displayStudentEdit();
 
     });
 
@@ -216,18 +225,50 @@ $(document).ready(function () {
         console.log("[studentlist.submit]: Submitted student details form.");
 
         var student = Utilities.formToJson(this);
-
-        // course.students = [];
-
-           // var student = null;
-
-      $(this)[0].reset();
         
-         Page.saveStudentAndDisplayDefault(student);
+
+        $(this)[0].reset();
+        
+      Page.saveStudentAndDisplayDefault(student);
+       // Page.displayStudentEdit();
 
 
 
     });
+
+    
+
+
+    $("#studentListTable").on("click", ".glyphicon-remove-sign", function (event) {
+
+
+        var id = $(event.target).data("inaktifstudent");
+
+        console.log("student clicked", id);
+
+
+
+      Page.displayStudentStatus(id);
+      //Page.saveStudentStatus(id);
+
+    });
+
+    $("#courseListTable").on("click", ".btn-warning", function (event) {
+        //$('.btn-danger').removeClass('btn-success').addClass('btn-primary ');
+       
+        $(this).addClass('btn-success');
+        $(this).text("Aktivera");
+
+       
+        
+
+       // console.log("Inaktivera kurs");
+       
+
+    });
+   
+    
+
 
 });
 

@@ -41,7 +41,12 @@ namespace WU15.StudentAdministration.Web.API
             else
             {
                 var savedIndex = MvcApplication.Courses.FindIndex(x => x.Id == course.Id);
+
+                course.Aktiv = true;
+                
                 MvcApplication.Courses.RemoveAt(savedIndex);                
+           
+            
             }
             
             

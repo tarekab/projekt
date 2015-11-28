@@ -116,7 +116,7 @@ namespace WU15.StudentAdministration.Web
                 Id = 1,
                 FirstName = "Kallee",
                 LastName = "Bengtsson",
-                StudentPersNummer= "19801212-0000",
+                StudentPersNummer= "19601212-0000",
                 Aktiv = true
             };
             Students.Add(student);
@@ -126,7 +126,7 @@ namespace WU15.StudentAdministration.Web
                 Id = 2,
                 FirstName = "Eva",
                 LastName = "Andersson",
-                StudentPersNummer = "19801212-0000",
+                StudentPersNummer = "19501212-0000",
                 Aktiv = true
             };
             Students.Add(student);
@@ -136,7 +136,7 @@ namespace WU15.StudentAdministration.Web
                 Id = 3,
                 FirstName = "olva",
                 LastName = "Nordsson",
-                StudentPersNummer = "19801212-0000",
+                StudentPersNummer = "19701212-0000",
                 Aktiv = true
             };
             Students.Add(student);
@@ -156,7 +156,7 @@ namespace WU15.StudentAdministration.Web
                 Id = 5,
                 FirstName = "Lisa",
                 LastName = "Olofsson",
-                StudentPersNummer = "19801212-0000" ,
+                StudentPersNummer = "19651212-0000" ,
                 Aktiv = true
             };
             Students.Add(student);
@@ -166,7 +166,7 @@ namespace WU15.StudentAdministration.Web
                 Id = 6,
                 FirstName = "Robert",
                 LastName = "Tovek",
-                StudentPersNummer = "19801212-0000",
+                StudentPersNummer = "19761212-0000",
                 Aktiv = true
             };
             Students.Add(student);

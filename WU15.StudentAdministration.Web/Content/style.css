@@ -94,7 +94,7 @@
 
         .glyphicon-pencil{
             width:40px;
-            height:20px;
+            height:40px;
             cursor:pointer;
 
         }
@@ -106,7 +106,33 @@
 }
 
         .glyphicon-user{
-
-        color:#47a447;
+        
+        color:green;
+         width:50px;
+       
         
         }
+
+        .glyphicon-remove-sign{
+
+            cursor:pointer;
+            width:60px;
+            height:20px;
+            color:red;
+
+        }
+
+           .clicked{
+
+               background-color: blue;
+
+           }
+
+
+           .disabled {
+
+               background-color:#CCCCCC;
+               cursor:not-allowed;
+              
+
+           }

@@ -43,7 +43,9 @@ namespace WU15.StudentAdministration.Web.API
             else
             {
                 var savedIndex = MvcApplication.Students.FindIndex(x => x.Id == student.Id);
+                student.Aktiv = true;
                 MvcApplication.Students.RemoveAt(savedIndex);
+            
             }
             
             
@@ -70,7 +72,7 @@ namespace WU15.StudentAdministration.Web.API
 
 
 
-            return string.Format("{0} {1}", student.FirstName, student.LastName,student.StudentPersNummer);       
+            return string.Format("{0} {1}", student.FirstName, student.LastName,student.StudentPersNummer,student.Aktiv);       
         }
 
         [HttpDelete]

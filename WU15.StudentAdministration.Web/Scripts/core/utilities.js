@@ -18,9 +18,7 @@ var Utilities = new function Utilities() {
         var jsonForm = {};
         $("input", $(form)).each(function (index) {
             jsonForm[$(this).attr("name")] = this.value;
-            //jsonForm[$(this).attr("firstName")] = this.value;
-            //jsonForm[$(this).attr("lastName")] = this.value;
-            //jsonForm[$(this).attr("studentPersNummer")] = this.value;
+
 
         });
 
@@ -31,9 +29,9 @@ var Utilities = new function Utilities() {
 
 }
 
-    
-       
-   
+
+
+
 
 var Page = new function Page() {
     var configuration = null;
@@ -47,12 +45,12 @@ var Page = new function Page() {
 
 
     // Initial rendering.
-    
+
     Page.init = function () {
         Page.navigate("start");
     }
 
-   
+
 
     // Fetch and display all courses.
     Page.displayDefault = function () {
@@ -90,21 +88,23 @@ var Page = new function Page() {
     }
 
     // Fetch the data and render the page.
-    Page.displayStudentList = function () {               
+    Page.displayStudentList = function () {
 
         $.ajax({
             type: "GET",
-            url: configuration.studentsUrl 
+            url: configuration.studentsUrl
         }).done(function (data) {
             console.log("[Page.displayStudentList]: Number of students returned: " + data.length);
             //console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
             // Render the courses.
 
-        //var data = {}
-        Page.renderStudentList(data);
+            //var data = {}
+            Page.renderStudentList(data);
         }).error(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText || textStatus);
         });
+
+
     }
 
     Page.displayStudentEdit = function (id) {
@@ -115,10 +115,29 @@ var Page = new function Page() {
         }).done(function (data) {
             console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
             //console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
+            // Render the students.
+
+            //var data = {}
+
+            Page.renderStudentEdit(data);
+        }).error(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText || textStatus);
+        });
+    }
+
+    Page.displayStudentStatus = function (id) {
+
+        $.ajax({
+            type: "GET",
+            url: configuration.studentsUrl + id
+        }).done(function (data) {
+            console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
+            //console.log("[Page.displayStudentList]: Number of students returned: " + data.id);
             // Render the courses.
 
             //var data = {}
-           Page.renderStudentEdit(data);
+
+            Page.renderStudentStatus(data);
         }).error(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText || textStatus);
         });
@@ -127,7 +146,7 @@ var Page = new function Page() {
     Page.renderDefault = function (courses) {
         var view = "";
         configuration.defaultPlaceholder.empty();
-                
+
         var courseIndex = 0;
         for (var contentIndex = 0; contentIndex < courses.length; contentIndex = contentIndex + configuration.numberOfColumnsPerRow) {
             var item = "<div class='row list-item'>";
@@ -144,29 +163,97 @@ var Page = new function Page() {
             // Bootstrap uses a 12 column grid system. 
             var bootstrapColumns = 12 / configuration.numberOfColumnsPerRow;
             for (; courseIndex < (tempCourseIndex) ; courseIndex++) {
-                item += "<div class='col-md-" + bootstrapColumns + "'>";
-                item += "<div class='list-group'>";
-                item += "<a href='#' class='list-group-item active data-course-item' data-item-id='"
-                    + courses[courseIndex].id + "'>"
-                    + "<span class='list-group-addon glyphicon glyphicon-edit'></span>&nbsp;" // The edit icon.
-                    + courses[courseIndex].name
-             
-                    
 
-                    + "</a>";
-                item += "<b>" +"<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + "</p>" + "</b>";
+                if (courses[courseIndex].aktiv === true) {
 
-                // Students
-                if (courses[courseIndex].students.length > 0) {
-                    for (var subIndex = 0; subIndex < courses[courseIndex].students.length; subIndex++) {
-                        item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
-                       
-                       
+                    item += "<div class='col-md-" + bootstrapColumns + "'>";
+                    item += "<div class='list-group'>";
+                    item += "<a href='#' class='list-group-item active data-course-item' data-item-id='"
+                        + courses[courseIndex].id + "'>"
+
+                        + "<span class='list-group-addon glyphicon glyphicon-edit'></span>&nbsp;" // The edit icon.
+                        + courses[courseIndex].name
 
 
+
+                        + "</a>";
+                    item += "<b>" + "<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + " </p>" + "</b>";
+
+                    // Students
+                    if (courses[courseIndex].students.length > 0) {
+
+
+                        for (var subIndex = 0; subIndex < courses[courseIndex].students.length; subIndex++) {
+
+
+                            if (courses[courseIndex].students[subIndex].aktiv === true) {
+                                item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+
+                            }
+
+
+                            if (courses[courseIndex].students[subIndex].aktiv === false) {
+
+                                $("glyphicon-user").css("color", "red");
+                                item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon  glyphicon-remove-sign'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+
+
+
+
+
+                            }
+                        }
                     }
-                } else {
-                    item += "<span class='list-group-item'><b>Kursen har inga studenter registrerade.</b></span>";
+
+                    else {
+                        item += "<span class='list-group-item'><b>Kursen har inga studenter registrerade.</b></span>";
+                    }
+                }
+                else {
+                    item += "<div class='col-md-" + bootstrapColumns + "'>";
+                    item += "<div class='list-group'>";
+                    item += "<div class='list-group-item disabled' data-item-id='"
+                        + courses[courseIndex].id + "'>"
+
+                      //  + "<span class='list-group-addon glyphicon glyphicon-edit'></span>&nbsp;" // The edit icon.
+                        + courses[courseIndex].name
+
+
+
+                        + "</div>";
+                    item += "<b>" + "<p class='list-group-item disabled course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + " </p>" + "</b>";
+
+                    // Students
+                    if (courses[courseIndex].students.length > 0) {
+
+
+                        for (var subIndex = 0; subIndex < courses[courseIndex].students.length; subIndex++) {
+
+
+                            if (courses[courseIndex].students[subIndex].aktiv === true) {
+                                item += "<a href='#' class='list-group-item disabled'>" + "<span class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+
+                            }
+
+
+                            if (courses[courseIndex].students[subIndex].aktiv === false) {
+
+                               
+                                item += "<a href='#' class='list-group-item '>" + "<span class='glyphicon  glyphicon-remove-sign'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+
+
+
+
+
+                            }
+                        }
+                    }
+
+                    else {
+                        item += "<span class='list-group-item'><b>Kursen har inga studenter registrerade.</b></span>";
+                    }
+
+
                 }
 
                 item += "</div>";
@@ -177,14 +264,15 @@ var Page = new function Page() {
             view += item;
         }
 
+
         // Append the html content to the div.
         configuration.defaultPlaceholder.append(view);
 
         // Display the content.
-   
-       
 
-        configuration.defaultPlaceholder.fadeIn(500);
+
+
+        configuration.defaultPlaceholder.fadeIn(1000);
     }
 
     Page.renderCourseList = function (courses) {
@@ -193,19 +281,20 @@ var Page = new function Page() {
 
         var html = "";
         for (var index = 0; index < courses.length; index++) {
-           
+
             html += "<tr>";
             html += "<td>" + courses[index].name + "</td>";
             html += "<td>" + courses[index].credits + "</td>";
             html += "<td>" + courses[index].students.length + "</td>";
-            html += "<td>" + "<input id='studentcheck' type='checkbox' checked />" + "</td>";
+            html += "<td>" + courses[index].aktiv + "</td>";
+            html += "<td>" + " <button id='inactifCourse' type= button' class='btn btn-warning'>Avaktivera</button>" + "</td>";
             html += "</tr>";
-            
+
 
         }
         tbody.append(html);
 
-        
+
         $(function () {
 
             var $list = $("#courseListTable tbody");
@@ -215,47 +304,45 @@ var Page = new function Page() {
             }).appendTo($list);
 
         });
-            configuration.courseListPlaceholder.fadeIn(500);
+        configuration.courseListPlaceholder.fadeIn(500);
 
     }
 
     Page.renderStudentList = function (student) {
-      //configuration.studentListPlaceholder.empty();
-        
-      var tbody = $("#studentListTable tbody");
-      tbody.empty();
+        //configuration.studentListPlaceholder.empty();
 
-      var html = "";
-      for (var index = 0; index < student.length; index++) {
+        var tbody = $("#studentListTable tbody");
+        tbody.empty();
+
+        var html = "";
+        for (var index = 0; index < student.length; index++) {
+
+            html += "<tr>";
+            html += "<td>" + student[index].firstName + "</td>";
+            html += "<td>" + student[index].lastName + "</td>";
+            html += "<td>" + student[index].id + "</td>";
+            html += "<td>" + student[index].studentPersNummer + "</td>";
            
-          html += "<tr>";
-          html += "<td>" + student[index].firstName + "</td>";
-          html += "<td>" + student[index].lastName + "</td>";
-          html += "<td>" + student[index].id + "</td>";
-          html += "<td>" + student[index].studentPersNummer + "</td>";
-          html += "<td>" + "<input id='studentstatus' type='checkbox' checked />"+ "</td>";
-          html += "<td>" + "<span data-editstudent=" + student[index].id + " class='glyphicon glyphicon-pencil'></span>" + "</td>";
-         
-          
-       
-          html += "</tr>";
-          
-      }
-         tbody.append(html);
-        //configuration.courseListPlaceholder.fadeIn(1000);
-       // var view = "Student list...";
-       // configuration.studentListPlaceholder.append(html);
+            html += "<td>" + " <button data-inactifButton="+student[index].id +" type= button' class='btn btn-warning'>Avaktivera</button></span>" + " " + student[index].aktiv + "</td>";
+           // html += "<td>" + "<span data-inaktifstudent=" + student[index].id + " class='glyphicon  glyphicon-remove-sign'></span>" + student[index].aktiv + "</td>";
+            html += "<td>" + "<span data-editstudent=" + student[index].id + " class='glyphicon glyphicon-pencil'></span>" + "</td>";
+
+            html += "</tr>";
+
+        }
+        tbody.append(html);
+
 
         //Sorter Student by Name
-         $(function () {
+        $(function () {
 
-             var $list = $("#studentListTable tbody");
+            var $list = $("#studentListTable tbody");
 
-             $list.children().detach().sort(function (a, b) {
-                 return $(a).text().localeCompare($(b).text());
-             }).appendTo($list);
+            $list.children().detach().sort(function (a, b) {
+                return $(a).text().localeCompare($(b).text());
+            }).appendTo($list);
 
-         });
+        });
         configuration.studentListPlaceholder.fadeIn(500);
     }
 
@@ -276,8 +363,8 @@ var Page = new function Page() {
         });
     }
 
-   
-   
+
+
     Page.renderStudentEdit = function (student) {
         // Hide the default view.
         configuration.defaultPlaceholder.hide();
@@ -288,9 +375,24 @@ var Page = new function Page() {
         $(form["firstName"]).val(student.firstName);
         $(form["lastName"]).val(student.lastName);
         $(form["studentPersNummer"]).val(student.studentPersNummer);
-        
+        $(form["studentStatus"]).val(student.aktiv);
     }
+        
+    Page.renderStudentStatus = function (student) {
+        var form = configuration.studentListPlaceholder.find("form")[0];
+        $(form["id"]).val(student.id);
+        $(form["firstName"]).val(student.firstName);
+        $(form["lastName"]).val(student.lastName);
+        $(form["studentPersNummer"]).val(student.studentPersNummer);
+       // $(form["studentStatus"]).val(false);
 
+        // Hide the default view.
+        configuration.defaultPlaceholder.hide();
+        //configuration.studentListPlaceholder.hide();
+        // Map all form values from the course object to the form.
+
+
+    }
 
 
     Page.renderCourseDetails = function (course) {
@@ -319,17 +421,18 @@ var Page = new function Page() {
     }
 
 
-  
+
 
 
     Page.renderStudentDetails = function (student) {
         // Hide the default view.
-        configuration.defaultPlaceholder.hide();
-        
+        //configuration.defaultPlaceholder.hide();
+
 
         // Display the details panel.
         configuration.studentDetailsPlaceholder.fadeIn(500);
     }
+
     Page.renderCourseDetailsStudentList = function (course) {
         configuration.courseDetailsStudentListPlaceholder.empty();
         if (course.students.length) {
@@ -341,14 +444,22 @@ var Page = new function Page() {
                     + course.students[index].firstName
                     + "' data-last-name='"
                     + course.students[index].lastName
+                    + "' data-student-persnummer='"
+                    + course.students[index].studentPersNummer
+                    + "' data-student-status='"
+                    + course.students[index].aktiv
                     + "'>"
                     + course.students[index].firstName
                     + " "
                     + course.students[index].lastName
-                    
-                    
-                     
-                     
+                    + " "
+
+
+                    + course.students[index].studentPersNummer
+
+
+
+
 
                     // Render the trash can, the remove student button.
                     + "<span class='pull-right'><button class='remove-registered-student btn btn-xs btn-warning'><span class='glyphicon glyphicon-trash'></span></button></span>"
@@ -379,18 +490,18 @@ var Page = new function Page() {
         });
 
     }
-
+   
     Page.appendStudentSelectOption = function (student) {
-        var name = student.firstName + " " + student.lastName +" "+ student.studentPersNummer;
+        var name = student.firstName + " " + student.lastName + " " + student.studentPersNummer + " " + student.aktiv;
         configuration.courseDetailsStudentSelectList.append(
             $("<option />")
             .text(name)
             .attr("data-id", student.id)
             .attr("data-first-name", student.firstName)
             .attr("data-last-name", student.lastName)
-            .attr("data-student-persnummer", student.studentPersNummer));
-        
-          
+            .attr("data-student-persnummer", student.studentPersNummer)
+            .attr("data-student-status", student.aktiv));
+
     }
 
     // Saves a course and displays the default view.
@@ -419,25 +530,43 @@ var Page = new function Page() {
 
     Page.saveStudentAndDisplayDefault = function (student) {
 
-      $.ajax({
-            url: configuration.studentsUrl,
+        $.ajax({
+            url: configuration.studentsUrl  ,
             type: "POST",
             data: JSON.stringify(student),
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data);
-                
-              
+                // configuration.studentListPlaceholder.fadeIn(500);
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
             }
         });
 
     }
+    Page.saveStudentStatus = function (student) {
+
+        $.ajax({
+            url: configuration.studentsUrl,
+            type: "POST",
+            data: JSON.stringify(student),
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                console.log(data);
+                // student.aktiv = false;
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
+
     // Saves a course and does'nt do a view update.
     Page.saveCourseDetails = function (course) {
 
-       
+
 
 
         $.ajax({
@@ -468,14 +597,17 @@ var Page = new function Page() {
             type: "POST",
             data: JSON.stringify(student),
             contentType: "application/json",
-            success: function (data,textStatus, jqXHR) {
+            success: function (data, textStatus, jqXHR) {
                 console.log("[Page.saveStudentDetails.success]: Results: " + data);
 
-                // Brodcast course added event.
+                // Brodcast student added event.
                 $.event.trigger({
                     type: "studentSavedCustomEvent",
                     message: { description: "Save a student.", data: student },
                     time: new Date()
+
+
+
                 });
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -484,12 +616,12 @@ var Page = new function Page() {
 
     }
 
-    
 
 
 
 
-    
+
+
 
     Page.appendStudentToList = function (student) {
         configuration.courseDetailsStudentListPlaceholder.append(
@@ -501,17 +633,19 @@ var Page = new function Page() {
                     + student.lastName
                     + "' data-student-persnummer='"
                     + student.studentPersNummer
+                    + "' data-student-status='"
+                    +  student.aktiv
                     + "'>"
                     + student.firstName
                     + " "
                     + student.lastName
                     + " "
                     + student.studentPersNummer
-                    //+ "  "
+                    
 
-                    
-                    
-                    
+
+
+
 
 
                     // Render the trash can remove student button.
@@ -525,7 +659,8 @@ var Page = new function Page() {
             id: 0,
             name: "",
             credits: 0,
-            students: []
+            students: [],
+            aktiv: true
         }
 
         return course;
@@ -536,7 +671,8 @@ var Page = new function Page() {
             id: 0,
             firstName: "",
             lastName: "",
-            studentPersNummer: ""
+            studentPersNummer: "",
+            aktiv: true
         }
 
         return student;
@@ -551,8 +687,9 @@ var Page = new function Page() {
         var id = selectedStudentOption.data("id");
         var firstName = selectedStudentOption.data("firstName");
         var lastName = selectedStudentOption.data("lastName");
-        var studentPersNummer = selectedStudentOption.data("studentPersNummer");
-        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer }
+        var studentPersNummer = selectedStudentOption.data("student-persnummer");
+        var aktiv = selectedStudentOption.data("student-status");
+        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer,aktiv:aktiv }
         selectedStudentOption.remove();
 
         // Remove the empty list default text.
@@ -560,15 +697,17 @@ var Page = new function Page() {
             = configuration.courseDetailsStudentListPlaceholder
                 .find(".registered-student")
                 .length;
+
         if (numberOfRegisteredStudents === 0) {
             configuration.courseDetailsStudentListPlaceholder.empty();
-           // $("#registerSelectedStudentButton").prop('disabled', true);
+            // $("#registerSelectedStudentButton").prop('disabled', true);
         }
+      
 
         Page.appendStudentToList(student);
 
         console.log("Registring student having id " + id + ".");
-        
+
     }
 
     Page.navigate = function (panel) {
@@ -578,7 +717,7 @@ var Page = new function Page() {
                 configuration.courseListPlaceholder.hide();
                 configuration.studentListPlaceholder.hide();
                 configuration.studentDetailsPlaceholder.hide();
-                
+
                 Page.displayDefault();
 
                 break;
@@ -617,8 +756,8 @@ var Page = new function Page() {
                 configuration.studentDetailsPlaceholder.hide();
                 var student = Page.getStudentTemplate();
                 Page.renderStudentDetails(student);
-                
-                
+
+
 
                 break;
 
@@ -635,7 +774,7 @@ var Page = new function Page() {
     }
 
     return Page;
-    
+
 }
 
 
