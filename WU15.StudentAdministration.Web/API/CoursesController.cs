@@ -13,7 +13,7 @@ namespace WU15.StudentAdministration.Web.API
     {
         [HttpGet]
         public IEnumerable<Course> Get()
-        {            
+        {
             return MvcApplication.Courses;
         }
 
@@ -36,21 +36,11 @@ namespace WU15.StudentAdministration.Web.API
                     course.Id = 1;
                 }
             }
-            
-            
             else
             {
                 var savedIndex = MvcApplication.Courses.FindIndex(x => x.Id == course.Id);
-
-                course.Aktiv = true;
-                
-                MvcApplication.Courses.RemoveAt(savedIndex);                
-           
-            
+                MvcApplication.Courses.RemoveAt(savedIndex);
             }
-            
-            
-            
             MvcApplication.Courses.Add(course);
 
             return course.Name;

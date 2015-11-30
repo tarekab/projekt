@@ -31,7 +31,12 @@ $(document).ready(function () {
         Page.displayCourseDetails(id);
     });
 
+    $("#defaultPlaceholder").on("click", ".glyphicon-user", function (event) {
+        var id = $(event.target).data("itemId");
+        console.log("[#defaultPlaceholder.click]: Course list clicked: " + id);
 
+        Page.displayStudentDetails(id);
+    });
 
     // Cancel the course details view.
     $("#courseDetailsCancelButton").on("click", function (event) {
@@ -144,13 +149,14 @@ $(document).ready(function () {
         console.log("[courseListAddCourseForm.submit]: Submitted the new student.");
 
         var student = Utilities.formToJson(this);
-       // course.students = [];
+        var course = Utilities.formToJson(this);
+        student.course = [];
         $(this)[0].reset();
         //configuration.studentListPlaceholder.hide();
 
        //Page.displayStudentList();
         // $("#studentListTable").hide();
-
+            
             Page.saveStudentDetails(student);
 
            
@@ -229,7 +235,8 @@ $(document).ready(function () {
 
         $(this)[0].reset();
         
-      Page.saveStudentAndDisplayDefault(student);
+        Page.saveStudentAndDisplayDefault(student);
+           
        // Page.displayStudentEdit();
 
 
@@ -239,36 +246,106 @@ $(document).ready(function () {
     
 
 
-    $("#studentListTable").on("click", ".glyphicon-remove-sign", function (event) {
+    //$("#studentListTable").on("click", ".glyphicon-remove-sign", function (event) {
 
 
-        var id = $(event.target).data("inaktifstudent");
+    //    var id = $(event.target).data("inaktifstudent");
 
-        console.log("student clicked", id);
+    //    console.log("student clicked", id);
+
+    //   var student = Utilities.formToJson(this);
 
 
+    //    //$(this)[0].reset();
 
-      Page.displayStudentStatus(id);
-      //Page.saveStudentStatus(id);
+        
 
-    });
+    //  Page.displayStudentStatus(id);
+    //     Page.saveStudentStatus(student);
+
+    //});
 
     $("#courseListTable").on("click", ".btn-warning", function (event) {
         //$('.btn-danger').removeClass('btn-success').addClass('btn-primary ');
-       
-        $(this).addClass('btn-success');
-        $(this).text("Aktivera");
+        var id = $(event.target).data("inactifcourse");
 
-       
+        var course = Utilities.formToJson(this);       
+            console.log("clicked " + id);
+            $(this).addClass('btn-success');
+            $(this).text("Aktivera");
+            event.preventDefault();
+            console.log("[studentlist.submit]: Submitted student details form.");
+            console.log("Course clicked", id);
+            var status = false;
+            Page.displayCourseStatus(id, status);
+
+  });
+
+
+        $("#courseListTable").on("click", ".btn-success", function (event) {
+        //$('.btn-danger').removeClass('btn-success').addClass('btn-primary ');
+        var id = $(event.target).data("actifcourse");
+
+        var course = Utilities.formToJson(this);
+            $(this).addClass('btn-warning');
+            $(this).text("Avaktivera");
+            event.preventDefault();
+            console.log("[studentlist.submit]: Submitted student details form.");
+            console.log("Course clicked", id);
+            var status = true;
+            Page.displayCourseStatus(id, status);
+
+
+
+
         
 
-       // console.log("Inaktivera kurs");
-       
 
     });
    
-    
 
+       
+        $("#studentListTable").on("click", ".btn-warning", function (event) {
+            //$('.btn-danger').removeClass('btn-success').addClass('btn-primary ');
+             var id = $(event.target).data("inaktifstudent");
+             var student = Utilities.formToJson(this);
+
+             
+             $(this).addClass('btn-success');
+             $(this).text("Aktivera");
+            
+            event.preventDefault();
+            console.log("[studentlist.submit]: Submitted student details form.");
+             console.log("student clicked", id);
+           
+            var status = false;
+            Page.displayStudentStatus(id,status);         
+           
+           
+           
+           
+
+        });
+        
+
+
+
+
+        $("#studentListTable").on("click", ".btn-success", function (event) {
+            //$('.btn-danger').removeClass('btn-success').addClass('btn-primary ');
+            var id = $(event.target).data("aktifstudent");
+
+            var course = Utilities.formToJson(this);
+            $(this).addClass('btn-warning');
+            $(this).text("Avaktivera");
+            event.preventDefault();
+            console.log("[studentlist.submit]: Submitted student details form.");
+            console.log("Student clicked", id);
+            var status = true;
+            Page.displayStudentStatus(id, status);
+
+
+        });
 
 });
 

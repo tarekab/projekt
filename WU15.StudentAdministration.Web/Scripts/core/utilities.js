@@ -125,7 +125,7 @@ var Page = new function Page() {
         });
     }
 
-    Page.displayStudentStatus = function (id) {
+    Page.displayStudentStatus = function (id,status) {
 
         $.ajax({
             type: "GET",
@@ -137,7 +137,12 @@ var Page = new function Page() {
 
             //var data = {}
 
-            Page.renderStudentStatus(data);
+            var student = data;
+           student.aktiv = status;
+
+            Page.saveStudentStatus(student);
+
+            
         }).error(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText || textStatus);
         });
@@ -187,7 +192,7 @@ var Page = new function Page() {
 
 
                             if (courses[courseIndex].students[subIndex].aktiv === true) {
-                                item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+                                item += "<a href='#' class='list-group-item'>" + "<span  class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
 
                             }
 
@@ -239,7 +244,7 @@ var Page = new function Page() {
                             if (courses[courseIndex].students[subIndex].aktiv === false) {
 
                                
-                                item += "<a href='#' class='list-group-item '>" + "<span class='glyphicon  glyphicon-remove-sign'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+                                item += "<a href='#' class='list-group-item disabled '>" + "<span class='glyphicon  glyphicon-remove-sign'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
 
 
 
@@ -281,17 +286,32 @@ var Page = new function Page() {
 
         var html = "";
         for (var index = 0; index < courses.length; index++) {
-
+                if(courses[index].aktiv===true){
             html += "<tr>";
             html += "<td>" + courses[index].name + "</td>";
             html += "<td>" + courses[index].credits + "</td>";
             html += "<td>" + courses[index].students.length + "</td>";
-            html += "<td>" + courses[index].aktiv + "</td>";
-            html += "<td>" + " <button id='inactifCourse' type= button' class='btn btn-warning'>Avaktivera</button>" + "</td>";
+           // html += "<td>" + courses[index].aktiv + "</td>";
+            html += "<td>" + "<span data-inactifcourse=" + courses[index].id + " class='btn btn-warning'>Avaktivera</span>"  + " " + courses[index].aktiv + "</td>";
+           
             html += "</tr>";
 
+                }
 
+                if (courses[index].aktiv ===false) {
+                    html += "<tr>";
+                    html += "<td>" + courses[index].name + "</td>";
+                    html += "<td>" + courses[index].credits + "</td>";
+                    html += "<td>" + courses[index].students.length + "</td>";
+                    // html += "<td>" + courses[index].aktiv + "</td>";
+                    
+                    html += "<td>" + "<span data-actifcourse=" + courses[index].id + " class='btn btn-success'>Aktivera</span>" + "</td>";
+                    html += "</tr>";
+
+                }
         }
+
+       
         tbody.append(html);
 
 
@@ -317,17 +337,34 @@ var Page = new function Page() {
         var html = "";
         for (var index = 0; index < student.length; index++) {
 
-            html += "<tr>";
-            html += "<td>" + student[index].firstName + "</td>";
-            html += "<td>" + student[index].lastName + "</td>";
-            html += "<td>" + student[index].id + "</td>";
-            html += "<td>" + student[index].studentPersNummer + "</td>";
-           
-            html += "<td>" + " <button data-inactifButton="+student[index].id +" type= button' class='btn btn-warning'>Avaktivera</button></span>" + " " + student[index].aktiv + "</td>";
-           // html += "<td>" + "<span data-inaktifstudent=" + student[index].id + " class='glyphicon  glyphicon-remove-sign'></span>" + student[index].aktiv + "</td>";
-            html += "<td>" + "<span data-editstudent=" + student[index].id + " class='glyphicon glyphicon-pencil'></span>" + "</td>";
+            if (student[index].aktiv === true) {
+                html += "<tr>";
+                html += "<td>" + student[index].firstName + "</td>";
+                html += "<td>" + student[index].lastName + "</td>";
+                html += "<td>" + student[index].id + "</td>";
+                html += "<td>" + student[index].studentPersNummer + "</td>";
 
-            html += "</tr>";
+                html += "<td>" + " <span data-inaktifstudent=" + student[index].id + " class='btn btn-warning'>Avaktivera</button></span>" + "</td>";
+                
+                html += "<td>" + "<span data-editstudent=" + student[index].id + " class='glyphicon glyphicon-pencil'></span>" + "</td>";
+
+                html += "</tr>";
+            }
+
+            if (student[index].aktiv === false) {
+                html += "<tr>";
+                html += "<td>" + student[index].firstName + "</td>";
+                html += "<td>" + student[index].lastName + "</td>";
+                html += "<td>" + student[index].id + "</td>";
+                html += "<td>" + student[index].studentPersNummer + "</td>";
+
+                html += "<td>" + " <span data-aktifstudent=" + student[index].id + "  class='btn btn-success'>Aktivera</button></span>"  + "</td>";
+                
+                html += "<td>" + "<span data-editstudent=" + student[index].id + " class='glyphicon glyphicon-pencil'></span>" + "</td>";
+
+                html += "</tr>";
+            }
+
 
         }
         tbody.append(html);
@@ -364,6 +401,28 @@ var Page = new function Page() {
     }
 
 
+    Page.displayCourseStatus = function (id,status) {
+        console.log("[Page.displayCourseDetails]: Fetching item having id: " + id);
+
+        $.ajax({
+            type: "GET",
+            url: configuration.coursesUrl + id
+        }).done(function (data) {
+
+            console.log(data);
+
+            var course = data;
+            course.aktiv = status;
+
+            Page.saveCourseStatus(course);
+           // Page.renderCourseStatus(data);
+
+        }).error(function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText || textStatus);
+        });
+    }
+
+
 
     Page.renderStudentEdit = function (student) {
         // Hide the default view.
@@ -384,7 +443,7 @@ var Page = new function Page() {
         $(form["firstName"]).val(student.firstName);
         $(form["lastName"]).val(student.lastName);
         $(form["studentPersNummer"]).val(student.studentPersNummer);
-       // $(form["studentStatus"]).val(false);
+       $(form["studentStatus"]).val(student.aktiv);
 
         // Hide the default view.
         configuration.defaultPlaceholder.hide();
@@ -420,6 +479,32 @@ var Page = new function Page() {
         configuration.courseDetailsPlaceholder.fadeIn(500);
     }
 
+    Page.renderCourseStatus = function (course) {
+        // Hide the default view.
+        configuration.defaultPlaceholder.hide();
+        //configuration.studentListPlaceholder.hide();
+        // Map all form values from the course object to the form.
+        var form = configuration.courseDetailsPlaceholder.find("form")[0];
+        $(form["id"]).val(course.id);
+        $(form["name"]).val(course.name);
+        $(form["credits"]).val(course.credits);
+        $(form["year"]).val(course.year);
+        $(form["term"]).val(course.term);
+
+        // Set the details panel top header text.
+        $(form).find('[name=title]').text(course.name);
+
+        // Render the registered students.
+        Page.renderCourseDetailsStudentList(course);
+
+        // Render and fill the student select list.
+        Page.renderCourseDetailsStudentSelectList();
+
+        // Display the details panel.
+       // configuration.courseDetailsPlaceholder.fadeIn(500);
+    }
+
+
 
 
 
@@ -435,7 +520,7 @@ var Page = new function Page() {
 
     Page.renderCourseDetailsStudentList = function (course) {
         configuration.courseDetailsStudentListPlaceholder.empty();
-        if (course.students.length) {
+        if (course.students.length ) {
             for (var index = 0; index < course.students.length; index++) {
                 configuration.courseDetailsStudentListPlaceholder.append(
                     "<div class='list-group-item registered-student' data-id='"
@@ -507,6 +592,8 @@ var Page = new function Page() {
     // Saves a course and displays the default view.
     Page.saveCourseAndDisplayDefault = function (course) {
 
+
+        course.aktiv = true;
         $.ajax({
             url: configuration.coursesUrl,
             type: "POST",
@@ -527,18 +614,53 @@ var Page = new function Page() {
 
     }
 
+    Page.saveCourseStatus = function (course) {
+
+
+        
+        $.ajax({
+            url: configuration.coursesUrl ,
+            type: "POST",
+            data: JSON.stringify(course),
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                console.log("[Page.saveCourseAndDisplayDefault.success]: Results: " + data);
+                
+                // De-scelect the top menu button.
+                Page.displayCourseList();
+
+                // Display the default contents.
+               // Page.displayDefault();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
+
 
     Page.saveStudentAndDisplayDefault = function (student) {
 
+        student.aktiv = true;
+
         $.ajax({
-            url: configuration.studentsUrl  ,
+
+
+            url: configuration.studentsUrl,
             type: "POST",
             data: JSON.stringify(student),
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data);
-                // configuration.studentListPlaceholder.fadeIn(500);
+             configuration.studentListPlaceholder.fadeIn(500);
+             $.event.trigger({
+                 type: "studentSavedCustomEvent",
+                 message: { description: "Save a student.", data: student },
+                 time: new Date()
 
+
+
+             });
             },
             error: function (jqXHR, textStatus, errorThrown) {
             }
@@ -547,15 +669,26 @@ var Page = new function Page() {
     }
     Page.saveStudentStatus = function (student) {
 
+        //student.aktiv =false;
+
         $.ajax({
+
+
             url: configuration.studentsUrl,
             type: "POST",
             data: JSON.stringify(student),
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
                 console.log(data);
-                // student.aktiv = false;
+                configuration.studentListPlaceholder.fadeIn(500);
+                //$.event.trigger({
+                //    type: "studentSavedCustomEvent",
+                //    message: { description: "Save a student.", data: student },
+                //    time: new Date()
 
+
+
+                //});
             },
             error: function (jqXHR, textStatus, errorThrown) {
             }
@@ -624,6 +757,8 @@ var Page = new function Page() {
 
 
     Page.appendStudentToList = function (student) {
+
+       // for (var index = 0; index < student.lenght ;index++ )
         configuration.courseDetailsStudentListPlaceholder.append(
                     "<div class='list-group-item registered-student' data-id='"
                     + student.id
@@ -672,6 +807,7 @@ var Page = new function Page() {
             firstName: "",
             lastName: "",
             studentPersNummer: "",
+            courses:[],
             aktiv: true
         }
 

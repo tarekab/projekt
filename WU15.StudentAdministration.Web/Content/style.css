@@ -118,7 +118,7 @@
             cursor:pointer;
             width:60px;
             height:20px;
-            color:red;
+            color:orangered;
 
         }
 
@@ -132,7 +132,7 @@
            .disabled {
 
                background-color:#CCCCCC;
-               cursor:not-allowed;
+               
               
 
            }
