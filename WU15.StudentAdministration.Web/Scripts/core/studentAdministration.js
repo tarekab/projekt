@@ -143,14 +143,14 @@ $(document).ready(function () {
     $("#studentDetailsForm").submit(function (event) {
 
            
-           
+        
 
         event.preventDefault();
         console.log("[courseListAddCourseForm.submit]: Submitted the new student.");
 
         var student = Utilities.formToJson(this);
         var course = Utilities.formToJson(this);
-        student.course = [];
+       // student.course = [];
         $(this)[0].reset();
         //configuration.studentListPlaceholder.hide();
 

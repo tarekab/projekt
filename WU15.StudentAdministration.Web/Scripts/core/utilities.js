@@ -183,7 +183,7 @@ var Page = new function Page() {
 
                         + "</a>";
                     item += "<b>" + "<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].term + " " + courses[courseIndex].year + " </p>" + "</b>";
-
+                   // item += "<b>" + "<p class='list-group-item course-item-info'>Kursstart " + courses[courseIndex].students[subIndex].length + " "  + " </p>" + "</b>";
                     // Students
                     if (courses[courseIndex].students.length > 0) {
 
@@ -229,11 +229,13 @@ var Page = new function Page() {
 
                             }
 
-
+                            var css = "glyphicon glyphicon-user active-user";
                             if (courses[courseIndex].students[subIndex].aktiv === false) {
+                                css = "glyphicon glyphicon-user inactive-user";
+                            
 
                                
-                                item += "<a href='#' class='list-group-item disabled '>" + "<span class='glyphicon  glyphicon-remove-sign'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
+                                item += "<a href='#' class='list-group-item disabled '>" + "<span  class='glyphicon glyphicon-user " + css + "'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
 
 
 
@@ -281,7 +283,7 @@ var Page = new function Page() {
             html += "<td>" + courses[index].credits + "</td>";
             html += "<td>" + courses[index].students.length + "</td>";
            // html += "<td>" + courses[index].aktiv + "</td>";
-            html += "<td>" + "<span data-inactifcourse=" + courses[index].id + " class='btn btn-warning'>Avaktivera</span>"  + " " + courses[index].aktiv + "</td>";
+            html += "<td>" + "<span data-inactifcourse=" + courses[index].id + " class='btn btn-warning'>Avaktivera</span>"  +    "</td>";
            
             html += "</tr>";
 
@@ -566,15 +568,15 @@ var Page = new function Page() {
     }
    
     Page.appendStudentSelectOption = function (student) {
-        var name = student.firstName + " " + student.lastName + " " + student.studentPersNummer + " " + student.aktiv;
+        var name = student.firstName + " " + student.lastName + " " + student.studentPersNummer ;
         configuration.courseDetailsStudentSelectList.append(
             $("<option />")
             .text(name)
             .attr("data-id", student.id)
             .attr("data-first-name", student.firstName)
             .attr("data-last-name", student.lastName)
-            .attr("data-student-persnummer", student.studentPersNummer)
-            .attr("data-student-status", student.aktiv));
+            .attr("data-student-persnummer", student.studentPersNummer));
+          
 
     }
 
@@ -658,7 +660,7 @@ var Page = new function Page() {
     }
     Page.saveStudentStatus = function (student) {
 
-        //student.aktiv =false;
+      
 
         $.ajax({
 
@@ -714,6 +716,8 @@ var Page = new function Page() {
 
     Page.saveStudentDetails = function (student) {
 
+       
+
         $.ajax({
             url: configuration.studentsUrl,
             type: "POST",
@@ -747,7 +751,7 @@ var Page = new function Page() {
 
     Page.appendStudentToList = function (student) {
 
-       // for (var index = 0; index < student.lenght ;index++ )
+       // for (var index = 0; index < student.length ;index++ )
         configuration.courseDetailsStudentListPlaceholder.append(
                     "<div class='list-group-item registered-student' data-id='"
                     + student.id
@@ -809,14 +813,23 @@ var Page = new function Page() {
             = configuration
                 .courseDetailsStudentSelectList
                 .find('option:selected');
+
+        // Not allowed to put empty student list 
+        if (selectedStudentOption.length != 0) {
+
         var id = selectedStudentOption.data("id");
         var firstName = selectedStudentOption.data("firstName");
         var lastName = selectedStudentOption.data("lastName");
-        var studentPersNummer = selectedStudentOption.data("student-persnummer");
-        var aktiv = selectedStudentOption.data("student-status");
-        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer,aktiv:aktiv }
+        var studentPersNummer = selectedStudentOption.data("student-persnummer");       
+        var student = { id: id, firstName: firstName, lastName: lastName, studentPersNummer: studentPersNummer }
         selectedStudentOption.remove();
-
+       }
+       else {
+           configuration
+                .courseDetailsStudentListPlaceholder
+                .append("<div><b><i>Inga studenter att lägga till !!!!!</i></b></div>");
+           
+       }
         // Remove the empty list default text.
         var numberOfRegisteredStudents
             = configuration.courseDetailsStudentListPlaceholder
@@ -825,6 +838,9 @@ var Page = new function Page() {
 
         if (numberOfRegisteredStudents === 0) {
             configuration.courseDetailsStudentListPlaceholder.empty();
+
+            
+
             // $("#registerSelectedStudentButton").prop('disabled', true);
         }
       

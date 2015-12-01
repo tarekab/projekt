@@ -34,21 +34,37 @@ namespace WU15.StudentAdministration.Web.API
         {
             if (student.Id > 0)
             {
-                if (MvcApplication.Students.Any())
-                {
+                
 
                     db.Entry(student).State = EntityState.Modified;
 
-                }
+            } 
                 else
                 {
                     db.Students.Add(student);
                 }
 
-            }
+
             db.SaveChanges();
-            return string.Format("{0} {1}", student.FirstName, student.LastName, student.StudentPersNummer, student.Aktiv);
+            return string.Format("{0} {1}", student.FirstName, student.LastName);
+        
         }
+
+            
+           
+    
+    
+    }
+           
+    
+}
+
+
+
+
+//db.SaveChanges();
+            //return string.Format("{0} {1}", student.FirstName, student.LastName, student.StudentPersNummer, student.Aktiv);
+        
             
             
             //else
@@ -91,5 +107,3 @@ namespace WU15.StudentAdministration.Web.API
         //    var student = MvcApplication.Students.FirstOrDefault(x => x.Id == id);
         //    MvcApplication.Students.Remove(student);
         //}
-    }
-}
