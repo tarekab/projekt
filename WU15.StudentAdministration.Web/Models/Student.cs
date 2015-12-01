@@ -1,4 +1,7 @@
-﻿namespace WU15.StudentAdministration.Web.Models
+﻿using System.Collections.Generic;
+
+namespace WU15.StudentAdministration.Web.Models
+
 {
     public class Student
     {
@@ -7,8 +10,12 @@
         public string LastName { get; set; }
         public string StudentPersNummer { get; set; }
         public bool Aktiv { get; set; }
-    
-    }
+        public List<Course> Courses { get; set; }
 
+        public Student()
+        {
+            Courses = new List<Course>();
+        }
+    }
 }
 

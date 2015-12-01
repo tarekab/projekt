@@ -136,3 +136,14 @@
               
 
            }
+
+
+
+
+           .active-user{
+               color: green;
+           }
+
+           .inactive-user{
+               color: red;
+           }

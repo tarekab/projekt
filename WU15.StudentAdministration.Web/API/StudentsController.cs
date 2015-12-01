@@ -7,50 +7,61 @@ using System.Net.Mail;
 using System.Web.Http;
 using WU15.StudentAdministration.Web.Models;
 using System.Security.Cryptography.X509Certificates;
+using WU15.StudentAdministration.Web.DataAccess;
+using System.Data.Entity;
 
 namespace WU15.StudentAdministration.Web.API
 {
     public class StudentsController : ApiController
     {
+
+        private DefaultDataContext db = new DefaultDataContext();
+        
         public IEnumerable<Student> Get()
-        {            
-            return MvcApplication.Students;
+        {
+            var students = db.Students.Include("Courses").OrderBy(x => x.FirstName);
+            
+            
+            return students;
         }
 
         public Student Get(int id)
         {
-            return MvcApplication.Students.FirstOrDefault(x => x.Id == id);
+            return db.Students.FirstOrDefault(x => x.Id == id);
         }
 
         public string Post(Student student)
         {
-            if (student.Id == 0)
+            if (student.Id > 0)
             {
                 if (MvcApplication.Students.Any())
                 {
-                
-                var id = MvcApplication.Students.Max(x => x.Id) + 1;
-                student.Id = id;
+
+                    db.Entry(student).State = EntityState.Modified;
 
                 }
                 else
                 {
-                    student.Id = 1;
+                    db.Students.Add(student);
                 }
 
             }
+            db.SaveChanges();
+            return string.Format("{0} {1}", student.FirstName, student.LastName, student.StudentPersNummer, student.Aktiv);
+        }
+            
+            
+            //else
+            //{
+            //    var savedIndex = MvcApplication.Students.FindIndex(x => x.Id == student.Id);
 
-            else
-            {
-                var savedIndex = MvcApplication.Students.FindIndex(x => x.Id == student.Id);
-               
-                MvcApplication.Students.RemoveAt(savedIndex);
-                //student.Aktiv=true;
-            }
-            
-            
-            
-            MvcApplication.Students.Add(student);
+            //    MvcApplication.Students.RemoveAt(savedIndex);
+            //    student.Aktiv = true;
+            //}
+
+
+
+            //MvcApplication.Students.Add(student);
 
 
             //SmtpClient client = new SmtpClient();
@@ -72,14 +83,13 @@ namespace WU15.StudentAdministration.Web.API
 
 
 
-            return string.Format("{0} {1}", student.FirstName, student.LastName,student.StudentPersNummer,student.Aktiv);       
-        }
+            
 
-        [HttpDelete]
-        public void Delete(int id)
-        {
-            var student = MvcApplication.Students.FirstOrDefault(x => x.Id == id);
-            MvcApplication.Students.Remove(student);
-        }
+        //[HttpDelete]
+        //public void Delete(int id)
+        //{
+        //    var student = MvcApplication.Students.FirstOrDefault(x => x.Id == id);
+        //    MvcApplication.Students.Remove(student);
+        //}
     }
 }

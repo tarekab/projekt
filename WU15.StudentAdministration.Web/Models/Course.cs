@@ -19,11 +19,13 @@ namespace WU15.StudentAdministration.Web.Models
         
         public bool Aktiv { get; set; }
         
-        public IEnumerable<Student> Students { get; set; }
+        public List<Student> Students { get; set; }
 
         public Course()
         {
             Students = new List<Student>();
         }
+
+       // public List<Student> Students { get; set; }
     }
 }

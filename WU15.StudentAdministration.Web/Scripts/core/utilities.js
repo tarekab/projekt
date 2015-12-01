@@ -191,22 +191,11 @@ var Page = new function Page() {
                         for (var subIndex = 0; subIndex < courses[courseIndex].students.length; subIndex++) {
 
 
+                            var css = "glyphicon glyphicon-user inactive-user";
                             if (courses[courseIndex].students[subIndex].aktiv === true) {
-                                item += "<a href='#' class='list-group-item'>" + "<span  class='glyphicon glyphicon-user'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
-
-                            }
-
-
-                            if (courses[courseIndex].students[subIndex].aktiv === false) {
-
-                                $("glyphicon-user").css("color", "red");
-                                item += "<a href='#' class='list-group-item'>" + "<span class='glyphicon  glyphicon-remove-sign'></span>" + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
-
-
-
-
-
-                            }
+                                css = "glyphicon glyphicon-user active-user";
+                            } 
+                            item += "<a href='#' class='list-group-item'>" + "<span  class='glyphicon glyphicon-user " + css + "'></span> " + courses[courseIndex].students[subIndex].firstName + " " + courses[courseIndex].students[subIndex].lastName + " " + courses[courseIndex].students[subIndex].studentPersNummer + "</a>";
                         }
                     }
 

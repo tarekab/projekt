@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using WU15.StudentAdministration.Web.API;
 using WU15.StudentAdministration.Web.Handlers;
 using WU15.StudentAdministration.Web.Models;
+using Newtonsoft.Json;
 
 namespace WU15.StudentAdministration.Web
 {
@@ -38,6 +39,8 @@ namespace WU15.StudentAdministration.Web
             json.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
             GlobalConfiguration.Configuration.MessageHandlers.Add(new XHttpMethodOverrideDelegatingHandler());
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
 
             Courses = new List<Course>();
             Students = new List<Student>();
